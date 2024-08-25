@@ -1,0 +1,514 @@
+<html><head><base href="https://www.simulation-m100.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur M101 </title>
+<style>
+  :root {
+    --primary-color: #00bcd4;
+    --secondary-color: #ff4081;
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-color: #ffffff;
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  h1, h3 {
+    color: var(--primary-color);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .simulator {
+    background-color: var(--surface-color);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .car-container {
+    width: 100%;
+    height: 200px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+    font-weight: bold;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    background-color: #333333;
+    color: var(--text-color);
+    font-size: 16px;
+  }
+
+  button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+  }
+
+  button:hover {
+    background-color: #00acc1;
+    transform: scale(1.05);
+  }
+
+  .result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #777777;
+  }
+
+  .solution-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .solution-button {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 12px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    font-size: 16px;
+    flex: 1 0 calc(50% - 5px);
+  }
+
+  .solution-button:hover {
+    background-color: #f50057;
+    transform: scale(1.05);
+  }
+
+  .weather-container {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 10px;
+  }
+
+  /* Animations */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  h1 {
+    animation: pulse 2s infinite;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Simulateur M101 </h1>
+    <h1>By sirius-lab-technologie</h1>
+    <div class="simulator">
+      <div class="car-container" id="carContainer">
+        <!-- La voiture et le terrain seront ajoutés ici par JavaScript -->
+      </div>
+      <div class="controls">
+        <div>
+          <label for="vehicle-type">Type de véhicule:</label>
+          <select id="vehicle-type" onchange="updateVehicleOptions()">
+            <option value="car">Voiture</option>
+            <option value="truck">Poids lourd</option>
+          </select>
+        </div>
+        <div>
+          <label for="vehicle-brand">Marque du véhicule:</label>
+          <select id="vehicle-brand">
+            <!-- Les options seront mises à jour dynamiquement -->
+          </select>
+        </div>
+        <div>
+          <label for="vehicle-weight">Poids du véhicule (kg):</label>
+          <input type="range" id="vehicle-weight" min="500" max="40000" value="1500" step="100" oninput="updateWeightDisplay()">
+          <span id="weight-value">1500 kg</span>
+        </div>
+        <div>
+          <label for="terrain-type">Type de terrain:</label>
+          <select id="terrain-type">
+            <option value="mud">Boue</option>
+            <option value="wet-sand">Sable mouillé</option>
+            <option value="snow">Neige</option>
+            <option value="gravel">Gravier</option>
+          </select>
+        </div>
+        <div>
+          <label for="stuck-depth">Profondeur d'enlisement:</label>
+          <input type="range" id="stuck-depth" min="5" max="100" value="20" step="1" oninput="updateDepthDisplay()">
+          <span id="depth-value">20 cm</span>
+        </div>
+        <div>
+          <label for="weather">Conditions météorologiques:</label>
+          <select id="weather">
+            <option value="sunny">Ensoleillé</option>
+            <option value="rainy">Pluvieux</option>
+            <option value="snowy">Neigeux</option>
+            <option value="windy">Venteux</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="simulateExtraction()">Lancer la simulation</button>
+      <div class="result" id="result"></div>
+      <div id="solutionButtons" class="solution-buttons"></div>
+      <div class="weather-container" id="weatherInfo"></div>
+    </div>
+    <div class="footer">
+    <p><center>Copyright Chamssoudine</center></p>
+      <p>Simulateur M101 -  disponible gratuitement</p>
+      <p>Nous remercions Allah le tout puissant</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script>
+    const carContainer = document.getElementById('carContainer');
+    let vehicle, terrain, planks, deflatedWheels, weatherEffect;
+
+    const vehicleOptions = {
+      car: ["Toyota", "Ford", "Volkswagen", "Honda", "Hyundai", "Renault", "Peugeot"],
+      truck: ["Volvo", "Scania", "Mercedes-Benz", "MAN", "DAF", "Iveco", "Renault Trucks"]
+    };
+
+    function updateVehicleOptions() {
+      const vehicleType = document.getElementById('vehicle-type').value;
+      const brandSelect = document.getElementById('vehicle-brand');
+      brandSelect.innerHTML = '';
+      vehicleOptions[vehicleType].forEach(brand => {
+        const option = document.createElement('option');
+        option.value = brand.toLowerCase();
+        option.textContent = brand;
+        brandSelect.appendChild(option);
+      });
+      updateWeightRange();
+    }
+
+    function updateWeightRange() {
+      const vehicleType = document.getElementById('vehicle-type').value;
+      const weightInput = document.getElementById('vehicle-weight');
+      if (vehicleType === 'car') {
+        weightInput.min = "500";
+        weightInput.max = "5000";
+        weightInput.value = "1500";
+      } else {
+        weightInput.min = "5000";
+        weightInput.max = "40000";
+        weightInput.value = "20000";
+      }
+      updateWeightDisplay();
+    }
+
+    function updateWeightDisplay() {
+      const weight = document.getElementById('vehicle-weight').value;
+      document.getElementById('weight-value').textContent = `${weight} kg`;
+    }
+
+    function updateDepthDisplay() {
+      const depth = document.getElementById('stuck-depth').value;
+      document.getElementById('depth-value').textContent = `${depth} cm`;
+    }
+
+    function initializeScene() {
+      carContainer.innerHTML = '';
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("height", "100%");
+      svg.setAttribute("viewBox", "0 0 200 100");
+      carContainer.appendChild(svg);
+
+      terrain = document.createElementNS(svgNS, "rect");
+      terrain.setAttribute("x", "0");
+      terrain.setAttribute("y", "70");
+      terrain.setAttribute("width", "200");
+      terrain.setAttribute("height", "30");
+      terrain.setAttribute("fill", "#4a4a4a");
+      svg.appendChild(terrain);
+
+      const vehicleType = document.getElementById('vehicle-type').value;
+      vehicle = document.createElementNS(svgNS, "g");
+      if (vehicleType === 'car') {
+        vehicle.innerHTML = `
+          <rect x="20" y="40" width="160" height="30" fill="${getRandomColor()}" />
+          <circle cx="50" cy="70" r="20" fill="#2a2a2a" />
+          <circle cx="150" cy="70" r="20" fill="#2a2a2a" />
+        `;
+      } else {
+        vehicle.innerHTML = `
+          <rect x="10" y="30" width="180" height="40" fill="${getRandomColor()}" />
+          <circle cx="40" cy="70" r="20" fill="#2a2a2a" />
+          <circle cx="100" cy="70" r="20" fill="#2a2a2a" />
+          <circle cx="160" cy="70" r="20" fill="#2a2a2a" />
+        `;
+      }
+      svg.appendChild(vehicle);
+
+      planks = document.createElementNS(svgNS, "g");
+      planks.innerHTML = `
+        <rect x="10" y="65" width="180" height="5" fill="#8B4513" style="display: none;" />
+      `;
+      svg.appendChild(planks);
+
+      deflatedWheels = document.createElementNS(svgNS, "g");
+      if (vehicleType === 'car') {
+        deflatedWheels.innerHTML = `
+          <ellipse cx="50" cy="70" rx="20" ry="15" fill="#2a2a2a" style="display: none;" />
+          <ellipse cx="150" cy="70" rx="20" ry="15" fill="#2a2a2a" style="display: none;" />
+        `;
+      } else {
+        deflatedWheels.innerHTML = `
+          <ellipse cx="40" cy="70" rx="20" ry="15" fill="#2a2a2a" style="display: none;" />
+          <ellipse cx="100" cy="70" rx="20" ry="15" fill="#2a2a2a" style="display: none;" />
+          <ellipse cx="160" cy="70" rx="20" ry="15" fill="#2a2a2a" style="display: none;" />
+        `;
+      }
+      svg.appendChild(deflatedWheels);
+
+      weatherEffect = document.createElementNS(svgNS, "g");
+      svg.appendChild(weatherEffect);
+    }
+
+    function getRandomColor() {
+      const colors = ['#00bcd4', '#ff4081', '#ffd54f', '#4caf50', '#9c27b0'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function simulateExtraction() {
+      initializeScene();
+      const vehicleWeight = document.getElementById('vehicle-weight').value;
+      const vehicleBrand = document.getElementById('vehicle-brand').value;
+      const terrainType = document.getElementById('terrain-type').value;
+      const stuckDepth = document.getElementById('stuck-depth').value;
+      const weather = document.getElementById('weather').value;
+
+      gsap.to(vehicle, {
+        duration: 1,
+        y: parseInt(stuckDepth) / 2,
+        ease: "power2.inOut",
+        onComplete: showResults
+      });
+
+      updateWeather(weather);
+
+      function showResults() {
+        const solutions = [
+          "Utiliser des planches",
+          "Dégonfler les pneus",
+          "Utiliser un treuil",
+          "Creuser une pente",
+          "Demander de l'aide",
+          "Utiliser des chaînes",
+          "Ajouter du poids sur l'essieu moteur",
+          "Utiliser un kit de récupération",
+          "Attendre que le terrain sèche",
+          "Utiliser un véhicule de dépannage"
+        ];
+
+        const numberOfSolutions = Math.floor(Math.random() * 3) + 3;
+        const selectedSolutions = [];
+        for (let i = 0; i < numberOfSolutions; i++) {
+          const index = Math.floor(Math.random() * solutions.length);
+          selectedSolutions.push(solutions.splice(index, 1)[0]);
+        }
+
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = `
+          <h3>Solutions recommandées :</h3>
+          <ul>
+            ${selectedSolutions.map(solution => `<li>${solution}</li>`).join('')}
+          </ul>
+          <p>Ces recommandations sont basées sur un véhicule ${document.getElementById('vehicle-type').value === 'car' ? 'léger' : 'poids lourd'} 
+          de marque ${vehicleBrand}, pesant ${vehicleWeight} kg, 
+          enlisé dans ${getTerrainName(terrainType)} 
+          à une profondeur de ${stuckDepth} cm, 
+          avec des conditions météorologiques ${getWeatherName(weather)}.</p>
+        `;
+
+        const solutionButtons = document.getElementById('solutionButtons');
+        solutionButtons.innerHTML = selectedSolutions.map(solution => 
+          `<button class="solution-button" onclick="applySolution('${solution}')">${solution}</button>`
+        ).join('');
+
+        updateWeatherInfo(weather);
+      }
+    }
+
+    function getTerrainName(terrainType) {
+      const terrainNames = {
+        'mud': 'la boue',
+        'wet-sand': 'le sable mouillé',
+        'snow': 'la neige',
+        'gravel': 'le gravier'
+      };
+      return terrainNames[terrainType] || terrainType;
+    }
+
+    function getWeatherName(weather) {
+      const weatherNames = {
+        'sunny': 'ensoleillées',
+        'rainy': 'pluvieuses',
+        'snowy': 'neigeuses',
+        'windy': 'venteuses'
+      };
+      return weatherNames[weather] || weather;
+    }
+
+    function updateWeather(weather) {
+      weatherEffect.innerHTML = '';
+      const svgNS = "http://www.w3.org/2000/svg";
+
+      switch(weather) {
+        case 'rainy':
+          for (let i = 0; i < 20; i++) {
+            const raindrop = document.createElementNS(svgNS, "line");
+            raindrop.setAttribute("x1", Math.random() * 200);
+            raindrop.setAttribute("y1", 0);
+            raindrop.setAttribute("x2", Math.random() * 200);
+            raindrop.setAttribute("y2", 10);
+            raindrop.setAttribute("stroke", "#00bcd4");
+            raindrop.setAttribute("stroke-width", "1");
+            weatherEffect.appendChild(raindrop);
+          }
+          break;
+        case 'snowy':
+          for (let i = 0; i < 20; i++) {
+            const snowflake = document.createElementNS(svgNS, "circle");
+            snowflake.setAttribute("cx", Math.random() * 200);
+            snowflake.setAttribute("cy", Math.random() * 100);
+            snowflake.setAttribute("r", 2);
+            snowflake.setAttribute("fill", "white");
+            weatherEffect.appendChild(snowflake);
+          }
+          break;
+        case 'windy':
+          for (let i = 0; i < 5; i++) {
+            const windLine = document.createElementNS(svgNS, "path");
+            windLine.setAttribute("d", `M0,${20 + i * 20} Q100,${10 + i * 20} 200,${20 + i * 20}`);
+            windLine.setAttribute("fill", "none");
+            windLine.setAttribute("stroke", "#b3e5fc");
+            windLine.setAttribute("stroke-width", "2");
+            weatherEffect.appendChild(windLine);
+          }
+          break;
+      }
+    }
+
+    function updateWeatherInfo(weather) {
+      const weatherInfo = document.getElementById('weatherInfo');
+      const weatherEffects = {
+        'sunny': "Les conditions ensoleillées peuvent aider à sécher le terrain, facilitant potentiellement l'extraction.",
+        'rainy': "La pluie peut rendre le terrain plus glissant et difficile. Soyez prudent dans vos manœuvres.",
+        'snowy': "La neige peut réduire l'adhérence. Utilisez des équipements adaptés comme des chaînes.",
+        'windy': "Le vent peut affecter la stabilité du véhicule. Tenez-en compte lors de vos tentatives d'extraction."
+      };
+      weatherInfo.innerHTML = `<p><strong>Effet météorologique :</strong> ${weatherEffects[weather]}</p>`;
+    }
+
+    function applySolution(solution) {
+      switch(solution) {
+        case "Utiliser des planches":
+          gsap.set(planks.firstElementChild, { display: 'block' });
+          gsap.to(vehicle, { duration: 1, y: 0, ease: "power2.inOut" });
+          break;
+        case "Dégonfler les pneus":
+          gsap.set(vehicle.querySelectorAll('circle'), { display: 'none' });
+          gsap.set(deflatedWheels.querySelectorAll('ellipse'), { display: 'block' });
+          gsap.to(vehicle, { duration: 1, y: "-=5", ease: "power2.inOut" });
+          break;
+        case "Utiliser un treuil":
+          gsap.to(vehicle, { duration: 2, x: -50, y: 0, ease: "power2.inOut" });
+          break;
+        case "Creuser une pente":
+          gsap.to(terrain, { duration: 1, attr: { y: 80 }, ease: "power2.inOut" });
+          gsap.to(vehicle, { duration: 1, y: "-=10", ease: "power2.inOut", delay: 1 });
+          break;
+        case "Demander de l'aide":
+          gsap.to(vehicle, { duration: 0.1, x: "+=2", repeat: 10, yoyo: true });
+          gsap.to(vehicle, { duration: 1, y: 0, ease: "power2.inOut", delay: 1 });
+          break;
+        case "Utiliser des chaînes":
+          gsap.to(vehicle, { duration: 0.5, y: "-=2", repeat: 4, yoyo: true });
+          gsap.to(vehicle, { duration: 1, y: 0, ease: "power2.inOut", delay: 2.5 });
+          break;
+        case "Ajouter du poids sur l'essieu moteur":
+          gsap.to(vehicle, { duration: 0.5, scaleY: 1.1 });
+          gsap.to(vehicle, { duration: 1, y: "-=10", ease: "power2.inOut", delay: 0.5 });
+          break;
+        case "Utiliser un kit de récupération":
+          gsap.to(vehicle, { duration: 2, x: -30, y: "-=15", ease: "elastic.out(1, 0.3)" });
+          break;
+        case "Attendre que le terrain sèche":
+          gsap.to(terrain, { duration: 2, fill: "#8B4513" });
+          gsap.to(vehicle, { duration: 1, y: 0, ease: "power2.inOut", delay: 2 });
+          break;
+        case "Utiliser un véhicule de dépannage":
+          const rescueVehicle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rescueVehicle.setAttribute("x", "200");
+          rescueVehicle.setAttribute("y", "30");
+          rescueVehicle.setAttribute("width", "100");
+          rescueVehicle.setAttribute("height", "40");
+          rescueVehicle.setAttribute("fill", "#ff9800");
+          carContainer.querySelector('svg').appendChild(rescueVehicle);
+          gsap.to(rescueVehicle, { duration: 2, x: 100 });
+          gsap.to(vehicle, { duration: 2, x: -100, y: 0, delay: 2 });
+          break;
+      }
+    }
+
+    // Initialisation
+    updateVehicleOptions();
+    updateWeightRange();
+    initializeScene();
+  </script>
+</body>
+</html>
